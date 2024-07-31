@@ -27,7 +27,7 @@ class MaddenLeagueBot(commands.Bot):
             if filename.endswith('.py'):
                 await self.load_extension(f'cogs.{filename[:-3]}')
                 logging.info(f'Loaded cog: {filename[:-3]}')
-        self.allowed_mentions = discord.AllowedMentions(everyone=False, users=False, roles=False)
+        self.allowed_mentions = discord.AllowedMentions(everyone=True, users=True, roles=True)
 
     async def on_ready(self):
         logging.info(f'{self.user} has connected to Discord!')

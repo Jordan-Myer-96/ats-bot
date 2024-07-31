@@ -24,7 +24,7 @@ class ReadyCommands(commands.Cog):
         with open(self.ready_users_file, 'w') as f:
             json.dump(self.ready_users, f)
 
-    @commands.command(name='ready', help='Mark yourself or specified users as ready')
+    @commands.command(name='ready')
     async def ready(self, ctx, *users):
         if not users:
             users = [ctx.author.name]
@@ -39,7 +39,7 @@ class ReadyCommands(commands.Cog):
                 invalid_users.append(user)
             elif discord.utils.get(member.roles, name="Admin") or discord.utils.get(member.roles, name="Student Athlete"):
                 self.ready_users[str(member.id)] = True
-                valid_users.append(member.name)
+                valid_users.append(member.mention)
             else:
                 no_permission_users.append(member.name)
 
@@ -56,7 +56,25 @@ class ReadyCommands(commands.Cog):
         if no_permission_users:
             response.append(f"The following users don't have the required role: {', '.join(no_permission_users)}")
 
-        await ctx.send("\n".join(response) or "No valid users were marked as ready.")
+        response_message = "\n".join(response) or "No valid users were marked as ready."
+
+        # Check if the command was called in #main-chat
+        if ctx.channel.name == "main-chat":
+            # Find the #ready-up channel
+            target_channel = discord.utils.get(ctx.guild.text_channels, name="ready-up")
+            if target_channel:
+                # Send the response to #ready-up and tag the user who called the command
+                no_mentions = discord.AllowedMentions(everyone=False, users=False, roles=False)
+                await target_channel.send(f"{ctx.author.mention} used in main-chat")
+                await target_channel.send(f"{response_message}", allowed_mentions = no_mentions)
+                # Inform the user in #main-chat that the response was sent to #ready-up
+                await ctx.send(f"I've posted your ready status in {target_channel.mention}. Please use that channel for ready commands in the future.")
+            else:
+                # If #ready-up channel doesn't exist, send the response in the current channel
+                await ctx.send(f"Couldn't find #ready-up channel. {response_message}")
+        else:
+            # If not called in #main-chat, respond in the current channel
+            await ctx.send(response_message)
 
     @commands.command(name='unready', help='Remove ready status from yourself or specified users (admin only for others)')
     async def remove_ready(self, ctx, *users):
