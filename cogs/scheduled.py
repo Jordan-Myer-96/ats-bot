@@ -8,7 +8,7 @@ import pytz
 class ScheduledMessagesTest(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.est_time = time(hour=7, minute=0)  # Default to 7:00 AM EST
+        self.est_time = time(hour=19, minute=3)  # Default to 7:00 AM EST
         self.tag_not_ready_test.start()
 
     def cog_unload(self):
