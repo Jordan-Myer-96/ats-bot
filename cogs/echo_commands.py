@@ -9,7 +9,7 @@ class EchoCommands(commands.Cog):
         self.bot = bot
 
     @commands.command(name='echo')
-    @commands.has_permissions(manage_messages=True)
+    @commands.has_role("Admin")
     async def echo(self, ctx, *, content: str):
         # Try to extract channel and message
         channel_match = re.match(r'(<#\d+>|\S+)\s+(.*)', content, re.DOTALL)
@@ -38,15 +38,20 @@ class EchoCommands(commands.Cog):
         message = await self.parse_mentions(ctx, message)
 
         # Send the message
-        sent_message = await channel.send(message)
-        await ctx.send(f"Message echoed to {channel.mention}: {message}")
+        try:
+            sent_message = await channel.send(message)
+            await ctx.send(f"Message echoed to {channel.mention}: {message}")
 
-        # Process the message if it's a command
-        if message.startswith(self.bot.command_prefix):
-            # Create a new context for the command
-            new_ctx = await self.bot.get_context(sent_message)
-            if new_ctx.valid:
-                await self.bot.invoke(new_ctx)
+            # Process the message if it's a command
+            if message.startswith(self.bot.command_prefix):
+                # Create a new context for the command
+                new_ctx = await self.bot.get_context(sent_message)
+                if new_ctx.valid:
+                    await self.bot.invoke(new_ctx)
+        except discord.Forbidden:
+            await ctx.send(f"Error: I don't have permission to send messages in {channel.mention}.")
+        except discord.HTTPException as e:
+            await ctx.send(f"Error sending message: {str(e)}")
 
     async def get_channel(self, ctx, channel_input):
         # Check if it's a channel mention
