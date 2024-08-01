@@ -1,29 +1,28 @@
-# File: cogs/scheduled_messages_test.py
+# File: cogs/scheduled_messages.py
 
 import discord
 from discord.ext import commands, tasks
 from datetime import datetime, time
 import pytz
 
-class ScheduledMessagesTest(commands.Cog):
+class ScheduledMessages(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.est_time = time(hour=19, minute=3)  # Default to 7:00 AM EST
-        self.tag_not_ready_test.start()
+        self.est_time = time(hour=11, minute=0)  # Default to 7:00 AM EST
+        self.tag_not_ready.start()
 
     def cog_unload(self):
-        self.tag_not_ready_test.cancel()
+        self.tag_not_ready.cancel()
 
     def est_to_utc(self, est_time):
         est = pytz.timezone('US/Eastern')
         utc = pytz.UTC
-        # Use today's date with EST time
         est_datetime = datetime.now(est).replace(hour=est_time.hour, minute=est_time.minute, second=0, microsecond=0)
         return est_datetime.astimezone(utc).time()
 
     @tasks.loop(time=time(hour=11, minute=0))  # Placeholder, will be updated in start_tasks
-    async def tag_not_ready_test(self):
-        server_id = 1265765589641592924  # Replace with your specific server ID
+    async def tag_not_ready(self):
+        server_id = 987654321  # Replace with your specific server ID
         channel_name = "last-call"  # Channel name to send the message
 
         server = self.bot.get_guild(server_id)
@@ -47,30 +46,29 @@ class ScheduledMessagesTest(commands.Cog):
                              str(member.id) not in ready_cog.ready_users]
         
         if not not_ready_members:
-            await channel.send("[TEST] Everyone is ready!")
+            await channel.send("Everyone is ready!")
         else:
-            message = f"[TEST] The following users would have been tagged as not ready at {self.est_time.strftime('%I:%M %p')} EST: "
-            usernames = [member.name for member in not_ready_members]
+            message = f"The following users are not ready: "
+            mentions = [member.mention for member in not_ready_members]
             
-            while usernames:
+            while mentions:
                 current_message = message
-                while usernames and len(current_message) + len(usernames[0]) + 2 <= 2000:
-                    current_message += usernames.pop(0) + ", "
-                current_message = current_message.rstrip(", ")  # Remove trailing comma and space
+                while mentions and len(current_message) + len(mentions[0]) + 2 <= 2000:
+                    current_message += mentions.pop(0) + " "
                 await channel.send(current_message)
-                message = "[TEST] Continued: "
+                message = "Continued: "
 
-    @tag_not_ready_test.before_loop
-    async def before_tag_not_ready_test(self):
+    @tag_not_ready.before_loop
+    async def before_tag_not_ready(self):
         await self.bot.wait_until_ready()
-        self.tag_not_ready_test.change_interval(time=self.est_to_utc(self.est_time))
+        self.tag_not_ready.change_interval(time=self.est_to_utc(self.est_time))
         print(f"Scheduled task set to run at {self.est_time.strftime('%I:%M %p')} EST")
 
-    @commands.command(name='runtestnotready')
+    @commands.command(name='runnotready')
     @commands.has_permissions(manage_messages=True)
-    async def run_test_not_ready(self, ctx):
-        await self.tag_not_ready_test()
-        await ctx.send("Test notification for not ready users has been sent.")
+    async def run_not_ready(self, ctx):
+        await self.tag_not_ready()
+        await ctx.send("Notification for not ready users has been sent.")
 
     @commands.command(name='setnotreadytime')
     @commands.has_permissions(manage_messages=True)
@@ -78,10 +76,10 @@ class ScheduledMessagesTest(commands.Cog):
         if 0 <= hour < 24 and 0 <= minute < 60:
             self.est_time = time(hour=hour, minute=minute)
             utc_time = self.est_to_utc(self.est_time)
-            self.tag_not_ready_test.change_interval(time=utc_time)
+            self.tag_not_ready.change_interval(time=utc_time)
             await ctx.send(f"Notification time set to {self.est_time.strftime('%I:%M %p')} EST")
         else:
             await ctx.send("Invalid time. Please use 24-hour format (e.g., !setnotreadytime 7 0 for 7:00 AM)")
 
 async def setup(bot):
-    await bot.add_cog(ScheduledMessagesTest(bot))
+    await bot.add_cog(ScheduledMessages(bot))
