@@ -66,13 +66,13 @@ class ScheduledMessages(commands.Cog):
         print(f"Scheduled task set to run at {self.est_time.strftime('%I:%M %p')} EST")
 
     @commands.command(name='runnotready')
-    @commands.has_permissions(manage_messages=True)
+    @commands.has_role("Admin")
     async def run_not_ready(self, ctx):
         await self.tag_not_ready()
         await ctx.send("Notification for not ready users has been sent.")
 
     @commands.command(name='setnotreadytime')
-    @commands.has_permissions(manage_messages=True)
+    @commands.has_role("Admin")
     async def set_not_ready_time(self, ctx, hour: int, minute: int):
         if 0 <= hour < 24 and 0 <= minute < 60:
             self.est_time = time(hour=hour, minute=minute)
