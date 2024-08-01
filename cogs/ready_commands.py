@@ -72,7 +72,7 @@ class ReadyCommands(commands.Cog):
                 await ctx.send(f"I've posted your ready status in {target_channel.mention}. Please use that channel for ready commands in the future.")
             else:
                 # If #ready-up channel doesn't exist, send the response in the current channel
-                await ctx.send(f"Couldn't find #ready-up channel. {response_message}")
+                await ctx.send(f"Couldn't find #ready-up channel. {response_message}", ephemeral=True)
         else:
             # If not called in #main-chat, respond in the current channel
             await ctx.send(response_message)
@@ -85,8 +85,7 @@ class ReadyCommands(commands.Cog):
         if not users:
             users = [ctx.author.name]
         elif not is_admin and len(users) > 1 or (not is_admin and (len(users) == 1 and users[0].lower() != ctx.author.name.lower())):
-            await ctx.send("You can only remove your own ready status. Admins can remove status for other users.")
-            return
+            return await ctx.send("You can only remove your own ready status. Admins can remove status for other users.")
 
         removed_users = []
         not_ready_users = []
@@ -115,7 +114,7 @@ class ReadyCommands(commands.Cog):
             else:
                 response.append(f"The following usernames are invalid: {', '.join(invalid_users)}")
 
-        await ctx.send("\n".join(response) or "No changes were made to ready statuses.")
+        return await ctx.send("\n".join(response) or "No changes were made to ready statuses.")
 
     @commands.command(name='whosready', aliases=['whoisready'], help='List users who are ready and not ready')
     async def whos_ready(self, ctx):
@@ -128,7 +127,7 @@ class ReadyCommands(commands.Cog):
         ready_message = "These users are all ready: " + ", ".join(ready_members) if ready_members else "No users are ready yet."
         not_ready_message = "These users are not ready: " + ", ".join(not_ready_members) if not_ready_members else "All users are ready!"
         
-        await ctx.send(f"{ready_message}\n{not_ready_message}")
+        return await ctx.send(f"{ready_message}\n{not_ready_message}")
 
     @commands.command(name='newweek', help='Reset all ready statuses for a new week')
     @commands.has_role("Admin")
@@ -137,6 +136,23 @@ class ReadyCommands(commands.Cog):
         self.save_ready_users()
         await ctx.send("A new week has started! All ready statuses have been reset.")
 
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.channel.name == "breaking-news" and message.content.startswith("@everyone Week"):
+            ctx = await self.bot.get_context(message)
+            await self.new_week(ctx)
+            
+            target_channel = discord.utils.get(ctx.guild.text_channels, name="ready-up")
+            if target_channel:
+                await target_channel.send(f"{message.author.mention} The week has been reset. All users have been marked as not ready.")
+                
+                # Call whosready and send its output to the target channel
+                whosready_ctx = await self.bot.get_context(message)
+                whosready_ctx.channel = target_channel  # Set the channel for the new context
+                await self.whos_ready(whosready_ctx)
+            else:
+                await ctx.send("Couldn't find the 'ready-up' channel. Please make sure it exists. DM J$ if this is in error", ephemeral=True)
+            
     @commands.command(name='commands', help='List all available commands with descriptions')
     async def list_commands(self, ctx):
         command_list = [f"`{command.name}`: {command.help}" for command in self.bot.commands if command.help]

@@ -20,6 +20,7 @@ class MaddenLeagueBot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix='!', intents=intents)
         self.ready_users = {}
+        self.command_responses = {}
         self.ignored_commands = ['twitch', 'me']
 
     async def setup_hook(self):
@@ -44,6 +45,22 @@ class MaddenLeagueBot(commands.Bot):
                 return  # Ignore the command
 
         await self.process_commands(message)
+
+    async def on_message_delete(self, message):
+        if message.id in self.command_responses:
+            response_message = self.command_responses[message.id]
+            await response_message.delete()
+            del self.command_responses[message.id]
+
+    async def process_commands(self, message):
+        if message.author.bot:
+            return
+
+        ctx = await self.get_context(message)
+        if ctx.valid:
+            response = await self.invoke(ctx)
+            if response:
+                self.command_responses[message.id] = response
 
 bot = MaddenLeagueBot()
 
