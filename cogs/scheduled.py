@@ -83,13 +83,13 @@ class ScheduledMessages(commands.Cog):
         self.tag_not_ready.change_interval(time=self.est_to_utc(self.est_time))
         print(f"Scheduled task set to run at {self.est_time.strftime('%I:%M %p')} EST")
 
-    @commands.command(name='runnotready',help='Admin only: tag users in last-call who are not ready')
+    @commands.command(name='lastcall',help='Admin only: tag users in last-call who are not ready')
     @commands.has_role("Admin")
     async def run_not_ready(self, ctx):
         await self.tag_not_ready()
         await ctx.send("Notification for not ready users has been sent.")
 
-    @commands.command(name='setnotreadytime')
+    @commands.command(name='setlastcalltime')
     @commands.has_role("Admin")
     async def set_not_ready_time(self, ctx, hour: int, minute: int):
         if 0 <= hour < 24 and 0 <= minute < 60:
@@ -110,7 +110,7 @@ class ScheduledMessages(commands.Cog):
             else:
                 await ctx.send(f"Notification time remains unchanged at {saved_time.strftime('%I:%M %p')} EST")
         else:
-            await ctx.send("Invalid time. Please use 24-hour format (e.g., !setnotreadytime 11 0 for 11:00 AM)")
+            await ctx.send("Invalid time. Please use 24-hour format (e.g., !setlastcalltime 11 0 for 11:00 AM)")
 
 async def setup(bot):
     await bot.add_cog(ScheduledMessages(bot))
