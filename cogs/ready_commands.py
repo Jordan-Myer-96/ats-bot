@@ -59,13 +59,13 @@ class ReadyCommands(commands.Cog):
         response_message = "\n".join(response) or "No valid users were marked as ready."
 
         # Check if the command was called in #main-chat
-        if ctx.channel.name == "main-chat":
+        if ctx.channel.name != "ready-up":
             # Find the #ready-up channel
             target_channel = discord.utils.get(ctx.guild.text_channels, name="ready-up")
             if target_channel:
                 # Send the response to #ready-up and tag the user who called the command
                 no_mentions = discord.AllowedMentions(everyone=False, users=False, roles=False)
-                await target_channel.send(f"{ctx.author.mention} used in main-chat")
+                await target_channel.send(f"{ctx.author.mention} used in {ctx.channel.name}")
                 await target_channel.send(f"{response_message}", allowed_mentions = no_mentions)
                 # Inform the user in #main-chat that the response was sent to #ready-up
                 await ctx.message.add_reaction('🤡')
@@ -76,6 +76,7 @@ class ReadyCommands(commands.Cog):
         else:
             # If not called in #main-chat, respond in the current channel
             await ctx.send(response_message)
+            await ctx.message.add_reaction('🐐')
 
     @commands.command(name='unready', help='Remove ready status from yourself or specified users (admin only for others)')
     async def remove_ready(self, ctx, *users):

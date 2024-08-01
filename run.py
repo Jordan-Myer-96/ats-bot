@@ -20,6 +20,7 @@ class MaddenLeagueBot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix='!', intents=intents)
         self.ready_users = {}
+        self.ignored_commands = ['twitch', 'me']
 
     async def setup_hook(self):
         # Load cogs
@@ -31,6 +32,18 @@ class MaddenLeagueBot(commands.Bot):
 
     async def on_ready(self):
         logging.info(f'{self.user} has connected to Discord!')
+
+    async def on_message(self, message):
+        if message.author.bot:
+            return
+
+        # Check if the message starts with the command prefix and is an ignored command
+        if message.content.startswith(self.command_prefix):
+            command = message.content[len(self.command_prefix):].split()[0]
+            if command in self.ignored_commands:
+                return  # Ignore the command
+
+        await self.process_commands(message)
 
 bot = MaddenLeagueBot()
 
