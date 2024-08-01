@@ -24,7 +24,7 @@ class ReadyCommands(commands.Cog):
         with open(self.ready_users_file, 'w') as f:
             json.dump(self.ready_users, f)
 
-    @commands.command(name='ready')
+    @commands.command(name='ready',help= 'Mark yourself or specified users as ready(admin only for others)')
     async def ready(self, ctx, *users):
         if not users:
             users = [ctx.author.name]

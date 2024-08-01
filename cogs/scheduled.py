@@ -83,7 +83,7 @@ class ScheduledMessages(commands.Cog):
         self.tag_not_ready.change_interval(time=self.est_to_utc(self.est_time))
         print(f"Scheduled task set to run at {self.est_time.strftime('%I:%M %p')} EST")
 
-    @commands.command(name='runnotready')
+    @commands.command(name='runnotready',help='Admin only: tag users in last-call who are not ready')
     @commands.has_role("Admin")
     async def run_not_ready(self, ctx):
         await self.tag_not_ready()
