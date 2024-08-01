@@ -22,7 +22,7 @@ class ScheduledMessages(commands.Cog):
 
     @tasks.loop(time=time(hour=11, minute=0))  # Placeholder, will be updated in start_tasks
     async def tag_not_ready(self):
-        server_id = 987654321  # Replace with your specific server ID
+        server_id = 1265765589641592924  # Replace with your specific server ID
         channel_name = "last-call"  # Channel name to send the message
 
         server = self.bot.get_guild(server_id)
