@@ -57,6 +57,7 @@ class ScheduledMessages(commands.Cog):
                     current_message += mentions.pop(0) + " "
                 await channel.send(current_message)
                 message = "Continued: "
+            await channel.send(f'If anyone is planning on playing the CPU or doing recruiting tonight after 7PM EST, please let us know in this channel')
 
     @tag_not_ready.before_loop
     async def before_tag_not_ready(self):
