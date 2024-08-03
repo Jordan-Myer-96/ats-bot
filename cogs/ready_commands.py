@@ -68,15 +68,21 @@ class ReadyCommands(commands.Cog):
                 await target_channel.send(f"{ctx.author.mention} used in {ctx.channel.name}")
                 await target_channel.send(f"{response_message}", allowed_mentions = no_mentions)
                 # Inform the user in #main-chat that the response was sent to #ready-up
+                if ctx.author.name in ["krisothy", "jmoneymyer"]:
+                    await ctx.message.add_reaction('💩')
                 await ctx.message.add_reaction('🤡')
                 await ctx.send(f"I've posted your ready status in {target_channel.mention}. Please use that channel for ready commands in the future.")
             else:
                 # If #ready-up channel doesn't exist, send the response in the current channel
                 await ctx.send(f"Couldn't find #ready-up channel. {response_message}", ephemeral=True)
         else:
+            if ctx.author.name in ["krisothy", "jmoneymyer"]:
+                await ctx.send(response_message)
+                await ctx.message.add_reaction('💩')
+            else:
             # If not called in #main-chat, respond in the current channel
-            await ctx.send(response_message)
-            await ctx.message.add_reaction('🐐')
+                await ctx.send(response_message)
+                await ctx.message.add_reaction('🐐')
 
     @commands.command(name='unready', help='Remove ready status from yourself or specified users (admin only for others)')
     async def remove_ready(self, ctx, *users):
