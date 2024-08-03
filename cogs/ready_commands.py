@@ -68,7 +68,7 @@ class ReadyCommands(commands.Cog):
                 await target_channel.send(f"{ctx.author.mention} used in {ctx.channel.name}")
                 await target_channel.send(f"{response_message}", allowed_mentions = no_mentions)
                 # Inform the user in #main-chat that the response was sent to #ready-up
-                if ctx.author.name in ["krisothy", "jmoneymyer"]:
+                if ctx.author.name in ["krisothy"]:
                     await ctx.message.add_reaction('💩')
                 await ctx.message.add_reaction('🤡')
                 await ctx.send(f"I've posted your ready status in {target_channel.mention}. Please use that channel for ready commands in the future.")
@@ -76,7 +76,7 @@ class ReadyCommands(commands.Cog):
                 # If #ready-up channel doesn't exist, send the response in the current channel
                 await ctx.send(f"Couldn't find #ready-up channel. {response_message}", ephemeral=True)
         else:
-            if ctx.author.name in ["krisothy", "jmoneymyer"]:
+            if ctx.author.name in ["krisothy"]:
                 await ctx.send(response_message)
                 await ctx.message.add_reaction('💩')
             else:
