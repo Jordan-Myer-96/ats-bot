@@ -25,12 +25,12 @@ class MaddenLeagueBot(commands.Bot):
 
     async def setup_hook(self):
         # Load cogs
-        await self.load_extension('cogs.msg')
-        logging.info(f'Loaded msg cog')
-        # for filename in os.listdir('./cogs'):
-        #     if filename.endswith('.py'):
-        #         await self.load_extension(f'cogs.{filename[:-3]}')
-        #         logging.info(f'Loaded cog: {filename[:-3]}')
+        # await self.load_extension('cogs.msg')
+        # logging.info(f'Loaded msg cog')
+        for filename in os.listdir('./cogs'):
+            if filename.endswith('.py'):
+                await self.load_extension(f'cogs.{filename[:-3]}')
+                logging.info(f'Loaded cog: {filename[:-3]}')
         self.allowed_mentions = discord.AllowedMentions(everyone=True, users=True, roles=True)
 
     async def on_ready(self):
