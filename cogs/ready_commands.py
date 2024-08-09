@@ -136,7 +136,7 @@ class ReadyCommands(commands.Cog):
         return await ctx.send(f"{ready_message}\n{not_ready_message}")
 
     @commands.command(name='newweek', help='Reset all ready statuses for a new week')
-    @commands.has_role("Admin")
+    @commands.check_any(commands.is_owner(), commands.has_role("Admin"))
     async def new_week(self, ctx):
         self.ready_users.clear()
         self.save_ready_users()
