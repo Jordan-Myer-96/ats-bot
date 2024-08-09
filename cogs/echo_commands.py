@@ -9,7 +9,7 @@ class EchoCommands(commands.Cog):
         self.bot = bot
 
     @commands.command(name='echo')
-    @commands.has_role("Admin")
+    @commands.check_any(commands.is_owner(), commands.has_role("Admin"))
     async def echo(self, ctx, *, content: str):
         # Try to extract channel and message
         channel_match = re.match(r'(<#\d+>|\S+)\s+(.*)', content, re.DOTALL)
