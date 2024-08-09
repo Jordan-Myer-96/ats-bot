@@ -18,16 +18,10 @@ class EchoCommands(commands.Cog):
             channel_input, message = channel_match.groups()
             # Try to get channel by mention or name
             channel = await self.get_channel(ctx, channel_input)
+        
         else:
-            channel = discord.utils.get(ctx.guild.text_channels, name="main-chat")
-            message = content
-
-        if channel is None:
-            await ctx.send("Error: Couldn't find the specified channel. Using #main-chat.")
-            channel = discord.utils.get(ctx.guild.text_channels, name="main-chat")
-            if channel is None:
-                await ctx.send("Error: #main-chat channel not found. Please specify a valid channel.")
-                return
+            await ctx.send(f"Error: {channel} not found. Please specify a valid channel.")
+            return
 
         # Check permissions
         if not channel.permissions_for(ctx.guild.me).send_messages:

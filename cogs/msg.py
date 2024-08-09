@@ -8,14 +8,14 @@ class MessageLogger(commands.Cog):
         self.bot = bot
         self.server_id = server_id
         self.channel_name = channel_name
-        self.log_file = "main_chat_log.txt"
+        self.log_file = "S20_admin_chat_log.txt"
         # Ensure last_logged_time is UTC-aware
         self.last_logged_time = datetime.now(timezone.utc) - timedelta(seconds=10)
         self.bot.loop.create_task(self.log_messages_periodically())
 
     async def log_messages_periodically(self):
         await self.bot.wait_until_ready()
-        print("Bot is ready and will log messages every 10 seconds.")
+        print("Bot is ready and will log messages every 5 minuites.")
         while not self.bot.is_closed():
             await self.log_new_messages()
             await asyncio.sleep(10)  # Run every 10 seconds

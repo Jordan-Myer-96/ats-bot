@@ -25,10 +25,12 @@ class MaddenLeagueBot(commands.Bot):
 
     async def setup_hook(self):
         # Load cogs
-        for filename in os.listdir('./cogs'):
-            if filename.endswith('.py'):
-                await self.load_extension(f'cogs.{filename[:-3]}')
-                logging.info(f'Loaded cog: {filename[:-3]}')
+        await self.load_extension('cogs.msg')
+        logging.info(f'Loaded msg cog')
+        # for filename in os.listdir('./cogs'):
+        #     if filename.endswith('.py'):
+        #         await self.load_extension(f'cogs.{filename[:-3]}')
+        #         logging.info(f'Loaded cog: {filename[:-3]}')
         self.allowed_mentions = discord.AllowedMentions(everyone=True, users=True, roles=True)
 
     async def on_ready(self):
@@ -58,9 +60,21 @@ class MaddenLeagueBot(commands.Bot):
 
         ctx = await self.get_context(message)
         if ctx.valid:
-            response = await self.invoke(ctx)
-            if response:
-                self.command_responses[message.id] = response
+            # Check if the bot is in "killed" state
+            kill_revive_cog = self.get_cog('KillReviveCommands')
+            if kill_revive_cog and kill_revive_cog.is_killed:
+                if not (ctx.command and ctx.command.name == 'revive'):
+                    await ctx.send('Bot is under maintenance')
+                    return  # Don't process commands if bot is killed, except for 'revive'
+
+            try:
+                await self.invoke(ctx)
+            except commands.CommandError as e:
+                await ctx.send(f'An error occurred: {str(e)}')
+            except Exception as e:
+                await ctx.send('An unexpected error occurred. Please try again later.')
+                # You might want to log this error for debugging
+                print(f'Unexpected error: {str(e)}')
 
 bot = MaddenLeagueBot()
 
