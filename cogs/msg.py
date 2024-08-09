@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 import asyncio
 
 class MessageLogger(commands.Cog):
-    def __init__(self, bot, server_id, channel_name="bot-testing"):
+    def __init__(self, bot, server_id, channel_name="admin-chat"):
         self.bot = bot
         self.server_id = server_id
         self.channel_name = channel_name
