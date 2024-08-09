@@ -86,7 +86,7 @@ class ReadyCommands(commands.Cog):
 
     @commands.command(name='unready', help='Remove ready status from yourself or specified users (admin only for others)')
     async def remove_ready(self, ctx, *users):
-        is_admin = discord.utils.get(ctx.author.roles, name="Admin") or ctx.author.guild_permissions.administrator
+        is_admin = discord.utils.get(ctx.author.roles, name="Admin") or ctx.author.guild_permissions.administrator or ctx.bot.is_owner(ctx.author)
 
         if not users:
             users = [ctx.author.name]

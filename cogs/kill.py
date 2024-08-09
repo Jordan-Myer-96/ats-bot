@@ -9,7 +9,7 @@ class KillReviveCommands(commands.Cog):
         self.is_killed = False
 
     @commands.command(name='kill')
-    @commands.has_role("Admin")
+    @commands.check_any(commands.is_owner(), commands.has_role("Admin"))
     async def kill(self, ctx):
         if not self.is_killed:
             self.is_killed = True
