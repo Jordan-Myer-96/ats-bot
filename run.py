@@ -61,7 +61,7 @@ class MaddenLeagueBot(commands.Bot):
         ctx = await self.get_context(message)
         if ctx.valid:
             # Check if the bot is in "killed" state
-            kill_revive_cog = self.get_cog('KillReviveCommands')
+            kill_revive_cog = self.get_cog('kill')
             if kill_revive_cog and kill_revive_cog.is_killed:
                 if not (ctx.command and ctx.command.name == 'revive'):
                     await ctx.send('Bot is under maintenance')
