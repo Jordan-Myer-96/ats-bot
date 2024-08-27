@@ -43,7 +43,7 @@ class ScheduledMessages(commands.Cog):
     async def tag_not_ready(self):
         server_id = 1265765589641592924  # Replace with your specific server ID
         channel_name = "last-call"  # Channel name to send the message
-
+        
         server = self.bot.get_guild(server_id)
         if not server:
             print(f"Server with ID {server_id} not found.")
@@ -76,6 +76,9 @@ class ScheduledMessages(commands.Cog):
                     current_message += mentions.pop(0) + " "
                 await channel.send(current_message)
                 message = "Continued: "
+                
+            ready_channel = discord.utils.get(server.text_channels, name="ready-up")
+            await channel.send(f"When ready, please ready up in {ready_channel.mention}")
 
     @tag_not_ready.before_loop
     async def before_tag_not_ready(self):
